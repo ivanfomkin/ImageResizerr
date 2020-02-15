@@ -1,9 +1,11 @@
+import org.imgscalr.Scalr;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 
-public class ImageResizer implements Runnable{
+public class ImageResizer implements Runnable {
 
     private List<File> files;
     private int newWidth;
@@ -25,23 +27,11 @@ public class ImageResizer implements Runnable{
                 if (image == null) {
                     continue;
                 }
+                int newHeight = (int) Math.round(image.getHeight() / (image.getWidth() / (double) newWidth));
 
-                int newHeight = (int) Math.round(image.getHeight() / (image.getWidth() / (double) newWidth)
-                );
-
-                BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-
-                int withStep = image.getWidth() / newWidth;
-                int heightStep = image.getHeight() / newHeight;
-
-                for (int x = 0; x < newWidth; x++) {
-                    for (int y = 0; y < newHeight; y++) {
-                        int rgb = image.getRGB(x * withStep, y * heightStep);
-                        newImage.setRGB(x,y,rgb);
-                    }
-                }
                 File newFile = new File(destFolder + "/" + file.getName());
-                ImageIO.write(newImage, "jpg", newFile);
+                BufferedImage scaledImg = Scalr.resize(image, newWidth, newHeight);
+                ImageIO.write(scaledImg, "jpg", newFile);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
